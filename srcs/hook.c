@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/13 17:42:35 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 18:52:09 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/19 17:27:07 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,27 @@ int				key_hook(int keycode, t_env *e)
 	}
 	else
 	{
+		// ft_putendl(ft_itoa(keycode));
 		if (keycode == 65362)
 			move(&e->cam, e->cam.forward, 100);
 		if (keycode == 65364)
 			move(&e->cam, e->cam.forward, -100);
 		if (keycode == 65361)
-			rotate_y(&e->cam, -5);
+			move(&e->cam, e->cam.right, -5);
 		if (keycode == 65363)
-			rotate_y(&e->cam, 5);
+			move(&e->cam, e->cam.right, 5);
+		if (keycode == 32)
+			move(&e->cam, e->cam.up, 5);
+		if (keycode == 65505)
+			move(&e->cam, e->cam.up, -5);
+		if (keycode == 65464)
+			rotate_x(&e->cam, 5);
+		if (keycode == 65458)
+			rotate_x(&e->cam, -5);
+		if (keycode == 65460)
+			rotate_z(&e->cam, 5);
+		if (keycode == 65452)
+			rotate_z(&e->cam, -5);
 		fill_img(e->scene, &e->screen, e->cam);
 		mlx_put_image_to_window(e->mlx, e->win, e->screen.img, 0, 0);
 		debug(e);

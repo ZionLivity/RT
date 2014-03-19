@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/07 16:53:52 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 18:56:20 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/19 17:35:04 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,12 @@
 # define MAX_CYLINDER 30
 # define MAX_CONE 30
 
-# define TYPE_CAM 0
-# define TYPE_PROJ 1
-# define TYPE_SPHERE 2
-# define TYPE_PLAN 3
-# define TYPE_CYLINDER 4
-# define TYPE_CONE 5
+# define CAM 0
+# define PROJ 1
+# define SPHERE 2
+# define PLAN 3
+# define CYLINDER 4
+# define CONE 5
 
 typedef struct		s_transform
 {
@@ -38,7 +38,7 @@ typedef struct		s_transform
 	t_vector3f		scale;
 }					t_transform;
 
-typedef struct		s_obj
+typedef struct		s_parse
 {
 	int				type;
 	int				red;
@@ -52,7 +52,17 @@ typedef struct		s_obj
 	int				pos_x;
 	int				pos_y;
 	int				pos_z;
-	t_transform		tran;
+}					t_parse;
+
+typedef struct		s_obj
+{
+	int				type;
+	float			diameter;
+	float			intens;
+	t_vector3f		color;
+	t_vector3f		pos;
+	t_quaternion	rot;
+	t_vector3f		scale;
 }					t_obj;
 
 typedef struct		s_line
@@ -92,12 +102,13 @@ typedef struct		s_scene
 	int				shadow;
 	int				brightness;
 	t_elem			elem;
-	t_obj			cam;
+	t_obj			camera;
 	t_obj			plan[MAX_PLAN];
 	t_obj			proj[MAX_PROJ];
 	t_obj			sphere[MAX_SPHERE];
 	t_obj			cylinder[MAX_CYLINDER];
 	t_obj			cone[MAX_CONE];
+	t_camera		cam;
 }					t_scene;
 
 typedef struct		s_img
@@ -135,6 +146,7 @@ t_scene			parse(char *file);
 **	color.c
 */
 t_color			rgb(int r, int g, int b);
+t_color			rgbv(t_vector3f vec);
 
 /*
 **	hook.c
@@ -149,6 +161,7 @@ t_camera		new_camera(t_vector3f pos);
 void			move(t_camera *cam, t_vector3f dir, float amt);
 void			rotate_x(t_camera *cam, float angle);
 void			rotate_y(t_camera *cam, float angle);
+void			rotate_z(t_camera *cam, float angle);
 
 /*
 **	verify.c
@@ -165,5 +178,6 @@ float			res(float a, float b, float c);
 */
 float			sphere(t_camera cam, t_obj sphere, t_vector3f ray);
 float			cylinder(t_camera cam, t_obj cylinder, t_vector3f ray);
+float			plan(t_camera cam, t_obj plan, t_vector3f ray);
 
 #endif /* !RT_H */

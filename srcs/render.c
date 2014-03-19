@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 18:58:50 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/19 19:12:39 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,117 @@
 #include <libft.h>
 #include "rt.h"
 
-
 #include <stdio.h>
-int		inter(t_scene *scene, t_vector3f ray, t_camera cam, t_vector3f *inter)
+
+t_obj	*inter(t_scene *scene, t_vector3f ray, t_camera cam, t_vector3f *inter)
 {
 	float	t;
+	t_vector3f	tmp;
 
-	// if ((t = sphere(cam, scene->sphere[0], ray)) != -1)
-	// {
-	// 	*inter = mul3f(ray, t);
-	// 	return (1);
-	// }
-	if ((t = cylinder(cam, scene->cylinder[0], ray)) != -1)
+	if ((t = sphere(cam, scene->sphere[0], ray)) > 0)
 	{
 		*inter = mul3f(ray, t);
-		return (1);
+		*inter = add3v(*inter, cam.pos);
+		tmp = *inter;
+		tmp = transform(tmp, init_translation(scene->sphere[0].pos));
+		tmp = transform(tmp, to_rotation_matrix(scene->sphere[0].rot));
+		*inter = tmp;
+		return (&scene->sphere[0]);
 	}
-	return (0);
+	// if ((t = cylinder(cam, scene->cylinder[0], ray)) > 0)
+	// {
+	// 	*inter = mul3f(ray, t);
+	// 	*inter = add3v(*inter, cam.pos);
+	// 	tmp = *inter;
+	// 	tmp = transform(tmp, init_translation(scene->cylinder[0].pos));
+	// 	tmp = transform(tmp, to_rotation_matrix(scene->cylinder[0].rot));
+	// 	*inter = tmp;
+	// 	return (&scene->cylinder[0]);
+	// }
+	return (NULL);
+}
+t_vector3f	light(t_obj proj, t_vector3f normal, t_vector3f ray, t_vector3f inter)
+{
+	t_vector3f	light_vec;
+	t_vector3f	color;
+	float		dot;
+
+	(void)ray;
+	light_vec = sub3v(inter, proj.pos);
+	dot = dot3(normalized3(normal), normalized3(inv(light_vec)));
+	if (dot <= 0)
+		return (new_vector3f(0, 0, 0));
+	else
+	{
+		color = mul3f(proj.color, dot);
+		return (color);
+	}
+}
+// t_vector3f	light(t_obj proj, t_vector3f N, t_vector3f V, t_vector3f inter)
+// {
+// 	t_vector3f	L;
+// 	t_vector3f	diffuse;
+// 	t_vector3f	spec;
+// 	t_vector3f	R;
+// 	float		dot;
+// 	float		dot2;
+// 	// float		intensity;
+// 	// float		dist;
+
+// 	L = sub3v(inter, proj.pos);
+// 	dot = dot3(normalized3(L), normalized3(inv(N)));
+// 	if (dot <= 0)
+// 		return (new_vector3f(0, 0, 0));
+// 	else
+// 	{
+// 		diffuse = mul3f(proj.color, dot);
+// 		R = sub3v(inv(L), mul3f(N, dot * 2));
+// 		dot2 = dot3(normalized3(V), normalized3(R));
+// 		if (dot2 > 0)
+// 		{
+// 			printf("%f\n", dot2);
+// 			spec = mul3f(proj.color, dot2);
+// 		}
+// 		else
+// 			spec = new_vector3f(0, 0, 0);
+// 		//intensity = diffuse * (L.N) + specular * (V.R)n
+// 		// return (add3v(mul3f(diffuse, dot), mul3f(spec, dot2)));
+// 		// return (mul3f(diffuse, dot));
+// 		return (mul3f(spec, dot2));
+// 	}
+// 	return (new_vector3f(0, 0, 0));
+// }
+
+t_vector3f	get_normal(t_obj obj, t_vector3f inter)
+{
+	// t_vector3f	tmp;
+
+	// tmp = inter;
+	// tmp = transform(tmp, init_translation(obj.pos));
+	// tmp = transform(tmp, to_rotation_matrix(obj.rot));
+	if (obj.type == SPHERE)
+		return (sub3v(inter, obj.pos));
+	if (obj.type == CYLINDER)
+		return (new_vector3f(inter.x - obj.pos.x, 0, inter.z - obj.pos.z));
+	return (new_vector3f(0, 0, 0));
 }
 
 t_color	ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 {
 	t_vector3f	i;
+	t_obj		*obj;
+	t_vector3f	color;
+	int			j;
 
-	if (inter(scene, ray, cam, &i))
-		return (rgb(0, 255, 0));
+	j = 0;
+	if ((obj = inter(scene, ray, cam, &i)))
+	{
+		color = mul3f(obj->color, 0.2);
+		while (j < scene->elem.nb_proj)
+			color = add3v(color, light(scene->proj[j++], get_normal(*obj, i), ray ,i));
+		// printf("red: %f | green: %f | blue: %f\n", color.x, color.y, color.z);
+		return (rgbv(color));
+	}
 	return (rgb(0, 0, 0));
 }
 
@@ -80,11 +166,12 @@ int		render(t_env *env, t_scene *scene)
 	env->screen.img = mlx_new_image(env->mlx, WIN_W, WIN_H);
 	env->screen.data = mlx_get_data_addr(env->screen.img, &env->screen.bpp, \
 												&env->screen.sizeline, &e);
-	env->cam = new_camera(scene->cam.tran.pos);
-	rotate_x(&env->cam, scene->cam.tran.rot.x);
-	rotate_y(&env->cam, scene->cam.tran.rot.y);
-	fill_img(scene, &env->screen, env->cam);
+	scene->cam = new_camera(scene->camera.pos);
+	rotate_x(&env->cam, scene->camera.rot.x);
+	rotate_y(&env->cam, scene->camera.rot.y);
+	fill_img(scene, &env->screen, scene->cam);
 	env->scene = scene;
+	env->cam = scene->cam;
 	mlx_put_image_to_window(env->mlx, env->win, env->screen.img, 0, 0);
 	mlx_expose_hook(env->win, expose_hook, env);
 	mlx_key_hook(env->win, key_hook, env);

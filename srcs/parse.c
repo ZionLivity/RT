@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/24 16:40:11 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 18:35:50 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/19 14:37:06 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int		open_file(char *file)
 	return (fd);
 }
 
-void			fill_obj(t_obj *obj, int *nb_line, char *line)
+void			fill_obj(t_parse *obj, int *nb_line, char *line)
 {
 	t_line	l;
 
@@ -57,23 +57,29 @@ void			rotate(t_quaternion	*rot, t_vector3f axis, float angle)
 	*rot = normalized4(mul4q(new_quaternion4vf(axis, angle), *rot));
 }
 
-void			initobj(t_obj *obj)
+t_obj			initobj(t_parse *p, int type)
 {
-	obj->tran.rot = new_quaternion4f(0, 0, 0, 1);
-	rotate(&obj->tran.rot, new_vector3f(1, 0, 0), obj->rot_x);
-	rotate(&obj->tran.rot, new_vector3f(0, 1, 0), obj->rot_y);
-	rotate(&obj->tran.rot, new_vector3f(0, 0, 1), obj->rot_z);
-	obj->tran.pos = new_vector3f(obj->pos_x, obj->pos_y, obj->pos_z);
+	t_obj	obj;
+
+	obj.rot = new_quaternion4f(0, 0, 0, 1);
+	rotate(&obj.rot, new_vector3f(1, 0, 0), p->rot_x);
+	rotate(&obj.rot, new_vector3f(0, 1, 0), p->rot_y);
+	rotate(&obj.rot, new_vector3f(0, 0, 1), p->rot_z);
+	obj.pos = new_vector3f(p->pos_x, p->pos_y, p->pos_z);
+	obj.color = new_vector3f(p->red, p->green, p->blue);
+	obj.diameter = p->diameter;
+	obj.intens = p->intens;
+	obj.type = type;
+	return (obj);
 }
 
 t_obj			fill(int fd, int *nb_line, int type)
 {
 	char	*line;
 	int		i;
-	t_obj	obj;
+	t_parse	obj;
 
 	i = 0;
-	obj.type = type;
 	while (get_next_line(fd, &line) > 0)
 	{
 		if (ft_strcmp(line, "{") && !i)
@@ -88,25 +94,24 @@ t_obj			fill(int fd, int *nb_line, int type)
 		i++;
 		free(line);
 	}
-	initobj(&obj);
 	*nb_line = *nb_line + 2;
-	return (obj);
+	return (initobj(&obj, type));
 }
 
 int				find_obj(t_scene *s, int fd, char *l, int *nl)
 {
 	if (!ft_strcmp(l, "#camera"))
-		s->cam = fill(fd, nl, TYPE_CAM);
+		s->camera = fill(fd, nl, CAM);
 	else if (!ft_strcmp(l, "#proj") && s->elem.nb_proj < MAX_PROJ)
-		s->proj[s->elem.nb_proj++] = fill(fd, nl, TYPE_PROJ);
+		s->proj[s->elem.nb_proj++] = fill(fd, nl, PROJ);
 	else if (!ft_strcmp(l, ".sphere") && s->elem.nb_sphere < MAX_SPHERE)
-		s->sphere[s->elem.nb_sphere++] = fill(fd, nl, TYPE_SPHERE);
+		s->sphere[s->elem.nb_sphere++] = fill(fd, nl, SPHERE);
 	else if (!ft_strcmp(l, ".plan") && s->elem.nb_plan < MAX_PLAN)
-		s->plan[s->elem.nb_plan++] = fill(fd, nl, TYPE_PLAN);
+		s->plan[s->elem.nb_plan++] = fill(fd, nl, PLAN);
 	else if (!ft_strcmp(l, ".cylinder") && s->elem.nb_cylinder < MAX_CYLINDER)
-		s->cylinder[s->elem.nb_cylinder++] = fill(fd, nl, TYPE_CYLINDER);
+		s->cylinder[s->elem.nb_cylinder++] = fill(fd, nl, CYLINDER);
 	else if (!ft_strcmp(l, ".cone") && s->elem.nb_cone < MAX_CONE)
-		s->cone[s->elem.nb_cone++] = fill(fd, nl, TYPE_CONE);
+		s->cone[s->elem.nb_cone++] = fill(fd, nl, CONE);
 	else if (l[0] != '\0')
 		return (error("object error line: ", ft_itoa(*nl), TRUE, FALSE));
 	else

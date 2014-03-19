@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 11:28:51 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 18:43:56 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/19 13:19:27 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ float			length3(t_vector3f vec);
 float			dot3(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		cross3(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		normalized3(t_vector3f vec);
+t_vector3f		inv(t_vector3f vec);
 t_vector3f		add3v(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		sub3v(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		mul3v(t_vector3f vec1, t_vector3f vec2);
@@ -87,7 +88,7 @@ float			get_value3(t_vector3f vec);
 t_matrix4f		new_matrix4();
 t_matrix4f		mul4m(t_matrix4f m, t_matrix4f r);
 t_matrix4f		init_rotation3f(float x, float y, float z);
-t_matrix4f		init_translation(float x, float y, float z);
+t_matrix4f		init_translation(t_vector3f vec);
 t_matrix4f		init_rotation3v(t_vector3f f, t_vector3f u, t_vector3f r);
 t_matrix4f		init_scale(float x, float y, float z);
 t_vector3f		transform(t_vector3f v, t_matrix4f m);

@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 15:19:24 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 18:44:08 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/18 11:51:17 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,13 +91,13 @@ t_matrix4f		init_rotation3f(float x, float y, float z)
 	return (res);
 }
 
-t_matrix4f		init_translation(float x, float y, float z)
+t_matrix4f		init_translation(t_vector3f vec)
 {
 	t_matrix4f	m;
 
-	m.m[0][0] = 1;	m.m[0][1] = 0;	m.m[0][2] = 0;	m.m[0][3] = x;
-	m.m[1][0] = 0;	m.m[1][1] = 1;	m.m[1][2] = 0;	m.m[1][3] = y;
-	m.m[2][0] = 0;	m.m[2][1] = 0;	m.m[2][2] = 1;	m.m[2][3] = z;
+	m.m[0][0] = 1;	m.m[0][1] = 0;	m.m[0][2] = 0;	m.m[0][3] = vec.x;
+	m.m[1][0] = 0;	m.m[1][1] = 1;	m.m[1][2] = 0;	m.m[1][3] = vec.y;
+	m.m[2][0] = 0;	m.m[2][1] = 0;	m.m[2][2] = 1;	m.m[2][3] = vec.z;
 	m.m[3][0] = 0;	m.m[3][1] = 0;	m.m[3][2] = 0;	m.m[3][3] = 1;
 
 	return (m);
