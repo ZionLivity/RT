@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/13 17:42:35 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 17:27:07 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/20 13:23:32 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,10 @@ int				key_hook(int keycode, t_env *e)
 			rotate_x(&e->cam, 5);
 		if (keycode == 65458)
 			rotate_x(&e->cam, -5);
+		if (keycode == 65457)
+			rotate_y(&e->cam, -5);
+		if (keycode == 65459)
+			rotate_y(&e->cam, 5);
 		if (keycode == 65460)
 			rotate_z(&e->cam, 5);
 		if (keycode == 65452)

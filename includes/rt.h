@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/07 16:53:52 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 17:35:04 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/20 12:31:05 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 # define CYLINDER 4
 # define CONE 5
 
+# define AMBIENT 0.2F
+
 typedef struct		s_transform
 {
 	t_vector3f		pos;
@@ -46,17 +48,25 @@ typedef struct		s_parse
 	int				blue;
 	float			intens;
 	float			diameter;
+	int				refraction;
+	int				reflection;
 	int				rot_x;
 	int				rot_y;
 	int				rot_z;
 	int				pos_x;
 	int				pos_y;
 	int				pos_z;
+	int				diffuse_cmp;
+	int				specular_cmp;
 }					t_parse;
 
 typedef struct		s_obj
 {
 	int				type;
+	int				diffuse_cmp;
+	int				specular_cmp;
+	int				refraction;
+	int				reflection;
 	float			diameter;
 	float			intens;
 	t_vector3f		color;
