@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 19:12:39 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/21 11:31:51 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_obj	*inter(t_scene *scene, t_vector3f ray, t_camera cam, t_vector3f *inter)
 	{
 		*inter = mul3f(ray, t);
 		*inter = add3v(*inter, cam.pos);
+		*inter = sub3v(*inter, scene->sphere[0].pos);
 		tmp = *inter;
 		tmp = transform(tmp, init_translation(scene->sphere[0].pos));
 		tmp = transform(tmp, to_rotation_matrix(scene->sphere[0].rot));
@@ -43,65 +44,38 @@ t_obj	*inter(t_scene *scene, t_vector3f ray, t_camera cam, t_vector3f *inter)
 	// }
 	return (NULL);
 }
-t_vector3f	light(t_obj proj, t_vector3f normal, t_vector3f ray, t_vector3f inter)
+
+// t_vector3f	ambient()
+// {
+
+// }
+
+t_vector3f	diffuse(t_obj proj, t_obj obj, t_vector3f light_vec, t_vector3f normal)
 {
-	t_vector3f	light_vec;
-	t_vector3f	color;
+	float		diffuse;
 	float		dot;
 
-	(void)ray;
-	light_vec = sub3v(inter, proj.pos);
-	dot = dot3(normalized3(normal), normalized3(inv(light_vec)));
-	if (dot <= 0)
-		return (new_vector3f(0, 0, 0));
-	else
-	{
-		color = mul3f(proj.color, dot);
-		return (color);
-	}
+	diffuse = 0;
+	dot = dot3(normalized3(inv(light_vec)), normalized3(normal));
+	if (dot > 0)
+		diffuse = dot * ((float)obj.diffuse_cmp / 100);
+	return (mul3f(proj.color, diffuse));
 }
-// t_vector3f	light(t_obj proj, t_vector3f N, t_vector3f V, t_vector3f inter)
-// {
-// 	t_vector3f	L;
-// 	t_vector3f	diffuse;
-// 	t_vector3f	spec;
-// 	t_vector3f	R;
-// 	float		dot;
-// 	float		dot2;
-// 	// float		intensity;
-// 	// float		dist;
 
-// 	L = sub3v(inter, proj.pos);
-// 	dot = dot3(normalized3(L), normalized3(inv(N)));
-// 	if (dot <= 0)
-// 		return (new_vector3f(0, 0, 0));
-// 	else
-// 	{
-// 		diffuse = mul3f(proj.color, dot);
-// 		R = sub3v(inv(L), mul3f(N, dot * 2));
-// 		dot2 = dot3(normalized3(V), normalized3(R));
-// 		if (dot2 > 0)
-// 		{
-// 			printf("%f\n", dot2);
-// 			spec = mul3f(proj.color, dot2);
-// 		}
-// 		else
-// 			spec = new_vector3f(0, 0, 0);
-// 		//intensity = diffuse * (L.N) + specular * (V.R)n
-// 		// return (add3v(mul3f(diffuse, dot), mul3f(spec, dot2)));
-// 		// return (mul3f(diffuse, dot));
-// 		return (mul3f(spec, dot2));
-// 	}
-// 	return (new_vector3f(0, 0, 0));
-// }
+t_vector3f	specular(t_obj proj, t_obj obj, t_vector3f ray, t_vector3f reflected)
+{
+	float		specular;
+	float		dot;
+
+	specular = 0;
+	dot = dot3(normalized3(inv(ray)), normalized3(inv(reflected)));
+	if (dot > 0)
+		specular = pow(dot, 20) * ((float)obj.specular_cmp / 100) * (obj.reflection / 10);
+	return (mul3f(proj.color, specular));
+}
 
 t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 {
-	// t_vector3f	tmp;
-
-	// tmp = inter;
-	// tmp = transform(tmp, init_translation(obj.pos));
-	// tmp = transform(tmp, to_rotation_matrix(obj.rot));
 	if (obj.type == SPHERE)
 		return (sub3v(inter, obj.pos));
 	if (obj.type == CYLINDER)
@@ -109,19 +83,49 @@ t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 	return (new_vector3f(0, 0, 0));
 }
 
+t_vector3f	get_light_vec(t_obj proj, t_vector3f inter)
+{
+	t_vector3f	light_vec;
+
+	light_vec = sub3v(inter, proj.pos);
+	return (light_vec);
+}
+
+t_vector3f	get_reflected(t_vector3f light_vec, t_vector3f normal)
+{
+	//vector3 R = L - 2.0f * DOT( L, N ) * N;
+	float		dot;
+
+	dot = dot3(normalized3(inv(light_vec)), normalized3(normal));
+	return (sub3v(normalized3(inv(light_vec)), mul3f(normalized3(normal), 2 * dot)));
+}
+
 t_color	ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 {
 	t_vector3f	i;
 	t_obj		*obj;
 	t_vector3f	color;
+	t_vector3f	normal;
+	t_vector3f	light_vec;
+	t_vector3f	reflected;
 	int			j;
 
 	j = 0;
 	if ((obj = inter(scene, ray, cam, &i)))
 	{
-		color = mul3f(obj->color, 0.2);
+		color = mul3f(obj->color, AMBIENT);
 		while (j < scene->elem.nb_proj)
-			color = add3v(color, light(scene->proj[j++], get_normal(*obj, i), ray ,i));
+		{
+			normal = get_normal(*obj, i);
+			light_vec = get_light_vec(scene->proj[j], i);
+			// printf("%f\n", length3(light_vec));
+			reflected = get_reflected(light_vec, normal);
+			color = add3v(color, diffuse(scene->proj[j], *obj, light_vec, normal));
+			color = add3v(color, specular(scene->proj[j], *obj, ray, reflected));
+			// color = mul3f(color, attenuation);
+			// color = add3v(color, light(scene->proj[j++], get_normal(*obj, i), ray ,i));
+			j++;
+		}
 		// printf("red: %f | green: %f | blue: %f\n", color.x, color.y, color.z);
 		return (rgbv(color));
 	}

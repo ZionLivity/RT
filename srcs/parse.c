@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/24 16:40:11 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 14:37:06 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/20 12:30:34 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,10 @@ void			fill_obj(t_parse *obj, int *nb_line, char *line)
 	obj->blue = (!ft_strcmp(l.var, "blue")) ? l.value : obj->blue;
 	obj->intens = (!ft_strcmp(l.var, "intensity")) ? l.value : obj->intens;
 	obj->diameter = (!ft_strcmp(l.var, "diameter")) ? l.value : obj->diameter;
+	obj->diffuse_cmp = (!ft_strcmp(l.var, "diffuse_cmp")) ? l.value : obj->diffuse_cmp;
+	obj->specular_cmp = (!ft_strcmp(l.var, "specular_cmp")) ? l.value : obj->specular_cmp;
+	obj->reflection = (!ft_strcmp(l.var, "reflection")) ? l.value : obj->reflection;
+	obj->refraction = (!ft_strcmp(l.var, "refraction")) ? l.value : obj->refraction;
 }
 
 void			rotate(t_quaternion	*rot, t_vector3f axis, float angle)
@@ -69,7 +73,11 @@ t_obj			initobj(t_parse *p, int type)
 	obj.color = new_vector3f(p->red, p->green, p->blue);
 	obj.diameter = p->diameter;
 	obj.intens = p->intens;
+	obj.diffuse_cmp = p->diffuse_cmp;
+	obj.specular_cmp = p->specular_cmp;
 	obj.type = type;
+	obj.refraction = p->refraction;
+	obj.reflection = p->reflection;
 	return (obj);
 }
 

@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 14:48:54 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 18:10:42 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/20 13:29:05 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ float		sphere(t_camera cam, t_obj sphere, t_vector3f ray)
 	ray_origin = cam.pos;
 	ray_dir = ray;
 	ray_origin = transform(ray_origin, to_rotation_matrix(sphere.rot));
-	ray_origin = transform(ray_origin, init_translation(sphere.pos));
+	ray_origin = transform(ray_origin, init_translation(inv(sphere.pos)));
 	ray_dir = transform(ray_dir, to_rotation_matrix(sphere.rot));
 	a = get_value3(pow3f(ray_dir, 2));
 	b = get_value3(mul3v(ray_dir, ray_origin)) * 2;
