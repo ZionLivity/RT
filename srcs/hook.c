@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/13 17:42:35 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/20 13:23:32 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/21 18:44:21 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,25 +55,25 @@ int				key_hook(int keycode, t_env *e)
 		if (keycode == 65364)
 			move(&e->cam, e->cam.forward, -100);
 		if (keycode == 65361)
-			move(&e->cam, e->cam.right, -5);
+			move(&e->cam, e->cam.right, -20);
 		if (keycode == 65363)
-			move(&e->cam, e->cam.right, 5);
+			move(&e->cam, e->cam.right, 20);
 		if (keycode == 32)
-			move(&e->cam, e->cam.up, 5);
+			move(&e->cam, e->cam.up, 20);
 		if (keycode == 65505)
-			move(&e->cam, e->cam.up, -5);
+			move(&e->cam, e->cam.up, -20);
 		if (keycode == 65464)
-			rotate_x(&e->cam, 5);
+			rotate_x(&e->cam, 20);
 		if (keycode == 65458)
-			rotate_x(&e->cam, -5);
+			rotate_x(&e->cam, -20);
 		if (keycode == 65457)
-			rotate_y(&e->cam, -5);
+			rotate_y(&e->cam, -20);
 		if (keycode == 65459)
-			rotate_y(&e->cam, 5);
+			rotate_y(&e->cam, 20);
 		if (keycode == 65460)
-			rotate_z(&e->cam, 5);
+			rotate_z(&e->cam, 20);
 		if (keycode == 65452)
-			rotate_z(&e->cam, -5);
+			rotate_z(&e->cam, -20);
 		fill_img(e->scene, &e->screen, e->cam);
 		mlx_put_image_to_window(e->mlx, e->win, e->screen.img, 0, 0);
 		debug(e);

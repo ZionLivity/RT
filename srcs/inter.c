@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 14:48:54 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/20 13:29:05 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/21 18:52:47 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 
-float		sphere(t_camera cam, t_obj sphere, t_vector3f ray)
+float		sphere(t_vector3f pos, t_obj sphere, t_vector3f ray)
 {
 	float	a;
 	float	b;
@@ -22,7 +22,7 @@ float		sphere(t_camera cam, t_obj sphere, t_vector3f ray)
 	t_vector3f	ray_origin;
 	t_vector3f	ray_dir;
 
-	ray_origin = cam.pos;
+	ray_origin = pos;
 	ray_dir = ray;
 	ray_origin = transform(ray_origin, to_rotation_matrix(sphere.rot));
 	ray_origin = transform(ray_origin, init_translation(inv(sphere.pos)));
@@ -33,21 +33,7 @@ float		sphere(t_camera cam, t_obj sphere, t_vector3f ray)
 	return (res(a, b, c));
 }
 
-// t_matrix4f	get_transformation(t_transform t)
-// {
-// 	// t_matrix4f	translation_matrix;
-// 	t_matrix4f	rotation_matrix;
-// 	// t_matrix4f	scale_matrix;
-
-// 	// translation_matrix = init_translation(t.pos);
-// 	rotation_matrix = to_rotation_matrix(t.rot);
-// 	// scale_matrix = init_scale(5, 5, 5);
-
-// 	// return (mul4m(translation_matrix, rotation_matrix));
-// 	return (rotation_matrix);
-// }
-
-float		cylinder(t_camera cam, t_obj cylinder, t_vector3f ray)
+float		cylinder(t_vector3f pos, t_obj cylinder, t_vector3f ray)
 {
 	float		a;
 	float		b;
@@ -56,10 +42,10 @@ float		cylinder(t_camera cam, t_obj cylinder, t_vector3f ray)
 	t_vector3f	ray_dir;
 	t_vector2f	tmp[2];
 
-	ray_origin = cam.pos;
+	ray_origin = pos;
 	ray_dir = ray;
 	ray_origin = transform(ray_origin, to_rotation_matrix(cylinder.rot));
-	ray_origin = transform(ray_origin, init_translation(cylinder.pos));
+	ray_origin = transform(ray_origin, init_translation(inv(cylinder.pos)));
 	ray_dir = transform(ray_dir, to_rotation_matrix(cylinder.rot));
 	tmp[0] = new_vector2f(ray_dir.x, ray_dir.z);
 	tmp[1] = new_vector2f(ray_origin.x, ray_origin.z);
@@ -69,17 +55,22 @@ float		cylinder(t_camera cam, t_obj cylinder, t_vector3f ray)
 	return (res(a, b, c));
 }
 
-float		plan(t_camera cam, t_obj plan, t_vector3f ray)
+float		plan(t_vector3f pos, t_obj plan, t_vector3f ray)
 {
-	float		t;
 	float		d;
+	float		t;
 	t_vector3f	norm;
+	t_vector3f	ray_origin;
+	t_vector3f	ray_dir;
 
-	norm = new_vector3f(0, 1, 0);
-	d = sqrt(rt(plan.pos.x) + rt(plan.pos.y) + rt(plan.pos.z));
-	t = norm.x * (cam.pos.x - plan.pos.x);
-	t += norm.y * (cam.pos.y - plan.pos.y);
-	t += norm.z * (cam.pos.z - plan.pos.z) - 10;
-	t /= norm.x * ray.x + norm.y * ray.y + norm.z * ray.z;
+	ray_origin = pos;
+	ray_dir = ray;
+	ray_origin = transform(ray_origin, to_rotation_matrix(plan.rot));
+	ray_origin = transform(ray_origin, init_translation(inv(plan.pos)));
+	ray_dir = transform(ray_dir, to_rotation_matrix(plan.rot));
+	norm = normalized3(new_vector3f(0, 1, 0));
+	d = length3(sub3v(plan.pos, pos));
+	t = dot3(norm, normalized3(plan.pos)) - d;
+	t /= dot3(norm, normalized3(ray_dir));
 	return (t);
 }

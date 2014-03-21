@@ -2,15 +2,15 @@
 {
 	x: 0;
 	y: 0;
-	z: -1000;
+	z: -2000;
 	rot_x: 0;
 	rot_y: 0;
 	rot_z: 0;
 }
 #proj
 {
-	x: 0;
-	y: 300;
+	x: -500;
+	y: 500;
 	z: -1000;
 	red: 0;
 	green: 0;
@@ -19,8 +19,8 @@
 }
 #proj
 {
-	x: 500;
-	y: -300;
+	x: -500;
+	y: -500;
 	z: -1000;
 	red: 0;
 	green: 255;
@@ -29,15 +29,26 @@
 }
 #proj
 {
-	x: -500;
-	y: -300;
+	x: 500;
+	y: 500;
 	z: -1000;
 	red: 255;
 	green: 0;
 	blue: 0;
 	intensity: 100;
 }
-.sphere
+#proj
+{
+	x: 500;
+	y: -500;
+	z: -1000;
+	red: 255;
+	green: 255;
+	blue: 0;
+	intensity: 100;
+}
+
+.cylinder
 {
 	x: 0;
 	y: 0;
@@ -54,20 +65,40 @@
 	diffuse_cmp: 50;
 	specular_cmp: 30;
 }
+
+
 .cylinder
 {
 	x: 0;
 	y: 0;
-	z: 10;
+	z: 0;
 	rot_x: 0;
 	rot_y: 0;
-	rot_z: 45;
-	red: 255;
-	green: 255;
-	blue: 255;
+	rot_z: 35;
+	red: 247;
+	green: 155;
+	blue: 87;
 	reflection: 10;
 	refraction: 0;
 	diameter: 100;
-	diffuse_cmp: 50;
-	specular_cmp: 30;
+	diffuse_cmp: 30;
+	specular_cmp: 20;
+}
+
+.cylinder
+{
+	x: 0;
+	y: 0;
+	z: 0;
+	rot_x: 0;
+	rot_y: 15;
+	rot_z: -45;
+	red: 230;
+	green: 94;
+	blue: 98;
+	reflection: 10;
+	refraction: 0;
+	diameter: 50;
+	diffuse_cmp: 30;
+	specular_cmp: 20;
 }

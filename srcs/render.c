@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/21 11:31:51 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/21 18:37:22 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,39 +16,40 @@
 
 #include <stdio.h>
 
-t_obj	*inter(t_scene *scene, t_vector3f ray, t_camera cam, t_vector3f *inter)
+t_obj	*inter(t_scene *scene, t_vector3f ray, t_vector3f pos, t_vector3f *inter)
 {
-	float	t;
+	float		t;
+	float		t2;
 	t_vector3f	tmp;
+	t_objl		*tmpl;
+	t_obj		*obj;
 
-	if ((t = sphere(cam, scene->sphere[0], ray)) > 0)
+	tmpl = scene->objl;
+	t = -1;
+	obj = NULL;
+	while (tmpl)
+	{
+		t2 = scene->tab_type[tmpl->obj->type](pos, *tmpl->obj, ray);
+		if (t2 > 0 && (t2 < t || t == -1))
+		{
+			t = t2;
+			obj = tmpl->obj;
+		}
+		tmpl = tmpl->next;
+	}
+	if (obj && t > 0)
 	{
 		*inter = mul3f(ray, t);
-		*inter = add3v(*inter, cam.pos);
-		*inter = sub3v(*inter, scene->sphere[0].pos);
+		*inter = add3v(*inter, pos);
+		*inter = sub3v(*inter, obj->pos);
 		tmp = *inter;
-		tmp = transform(tmp, init_translation(scene->sphere[0].pos));
-		tmp = transform(tmp, to_rotation_matrix(scene->sphere[0].rot));
+		tmp = transform(tmp, init_translation(obj->pos));
+		tmp = transform(tmp, to_rotation_matrix(obj->rot));
 		*inter = tmp;
-		return (&scene->sphere[0]);
+		return (obj);
 	}
-	// if ((t = cylinder(cam, scene->cylinder[0], ray)) > 0)
-	// {
-	// 	*inter = mul3f(ray, t);
-	// 	*inter = add3v(*inter, cam.pos);
-	// 	tmp = *inter;
-	// 	tmp = transform(tmp, init_translation(scene->cylinder[0].pos));
-	// 	tmp = transform(tmp, to_rotation_matrix(scene->cylinder[0].rot));
-	// 	*inter = tmp;
-	// 	return (&scene->cylinder[0]);
-	// }
 	return (NULL);
 }
-
-// t_vector3f	ambient()
-// {
-
-// }
 
 t_vector3f	diffuse(t_obj proj, t_obj obj, t_vector3f light_vec, t_vector3f normal)
 {
@@ -74,26 +75,38 @@ t_vector3f	specular(t_obj proj, t_obj obj, t_vector3f ray, t_vector3f reflected)
 	return (mul3f(proj.color, specular));
 }
 
+t_vector3f	shadows(t_scene *scene, t_obj *obj, t_vector3f light_vec, t_vector3f i)
+{
+	t_vector3f	i2;
+	t_obj		*o;
+
+	if ((o = inter(scene, inv(light_vec), i, &i2)) != NULL)
+	{
+		if (o == obj)
+			return (new_vector3f(0, 0, 0));
+		return (new_vector3f(-20, -20, -20));
+	}
+	return (new_vector3f(0, 0, 0));
+}
+
 t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 {
 	if (obj.type == SPHERE)
 		return (sub3v(inter, obj.pos));
 	if (obj.type == CYLINDER)
 		return (new_vector3f(inter.x - obj.pos.x, 0, inter.z - obj.pos.z));
+	if (obj.type == PLAN)
+		return (new_vector3f(0, 1, 0));
 	return (new_vector3f(0, 0, 0));
 }
 
 t_vector3f	get_light_vec(t_obj proj, t_vector3f inter)
 {
-	t_vector3f	light_vec;
-
-	light_vec = sub3v(inter, proj.pos);
-	return (light_vec);
+	return (sub3v(inter, inv(proj.pos)));
 }
 
 t_vector3f	get_reflected(t_vector3f light_vec, t_vector3f normal)
 {
-	//vector3 R = L - 2.0f * DOT( L, N ) * N;
 	float		dot;
 
 	dot = dot3(normalized3(inv(light_vec)), normalized3(normal));
@@ -108,23 +121,21 @@ t_color	ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 	t_vector3f	normal;
 	t_vector3f	light_vec;
 	t_vector3f	reflected;
-	int			j;
+	t_projl		*tmp;
 
-	j = 0;
-	if ((obj = inter(scene, ray, cam, &i)))
+	tmp = scene->projl;
+	if ((obj = inter(scene, ray, cam.pos, &i)))
 	{
 		color = mul3f(obj->color, AMBIENT);
-		while (j < scene->elem.nb_proj)
+		while (tmp)
 		{
 			normal = get_normal(*obj, i);
-			light_vec = get_light_vec(scene->proj[j], i);
-			// printf("%f\n", length3(light_vec));
+			light_vec = get_light_vec(*tmp->proj, i);
 			reflected = get_reflected(light_vec, normal);
-			color = add3v(color, diffuse(scene->proj[j], *obj, light_vec, normal));
-			color = add3v(color, specular(scene->proj[j], *obj, ray, reflected));
-			// color = mul3f(color, attenuation);
-			// color = add3v(color, light(scene->proj[j++], get_normal(*obj, i), ray ,i));
-			j++;
+			color = add3v(color, diffuse(*tmp->proj, *obj, light_vec, normal));
+			color = add3v(color, specular(*tmp->proj, *obj, ray, reflected));
+			// color = add3v(color, shadows(scene, obj, light_vec, i));
+			tmp = tmp->next;
 		}
 		// printf("red: %f | green: %f | blue: %f\n", color.x, color.y, color.z);
 		return (rgbv(color));
@@ -154,6 +165,7 @@ int		fill_img(t_scene *scene, t_img *img, t_camera cam)
 			tmp[2] = color.red;
 			p.x++;
 		}
+
 		p.y++;
 	}
 	return (1);

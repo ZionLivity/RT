@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/07 16:53:52 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/20 12:31:05 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/21 16:16:53 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,18 @@
 # define MAX_CYLINDER 30
 # define MAX_CONE 30
 
-# define CAM 0
-# define PROJ 1
-# define SPHERE 2
-# define PLAN 3
-# define CYLINDER 4
-# define CONE 5
+# define CAM -2
+# define PROJ -1
 
-# define AMBIENT 0.2F
+enum		e_obj
+{
+	SPHERE,
+	CYLINDER,
+	PLAN,
+	CONE
+};
+
+# define AMBIENT 0.25F
 
 typedef struct		s_transform
 {
@@ -88,17 +92,6 @@ typedef struct		s_color
 	int				blue;
 }					t_color;
 
-typedef struct		s_elem
-{
-	int				count_obj;
-	int				nb_cam;
-	int				nb_plan;
-	int				nb_proj;
-	int				nb_sphere;
-	int				nb_cylinder;
-	int				nb_cone;
-}					t_elem;
-
 typedef struct		s_camera
 {
 	t_vector3f		pos;
@@ -107,18 +100,28 @@ typedef struct		s_camera
 	t_vector3f		right;
 }					t_camera;
 
+typedef struct		s_objl
+{
+	t_obj			*obj;
+	struct s_objl	*next;
+}					t_objl;
+
+typedef struct		s_projl
+{
+	t_obj			*proj;
+	struct s_projl	*next;
+}					t_projl;
+
+typedef	float	(*find_type)(t_vector3f, t_obj, t_vector3f);
+
 typedef struct		s_scene
 {
-	int				shadow;
-	int				brightness;
-	t_elem			elem;
+	int				count_obj;
 	t_obj			camera;
-	t_obj			plan[MAX_PLAN];
-	t_obj			proj[MAX_PROJ];
-	t_obj			sphere[MAX_SPHERE];
-	t_obj			cylinder[MAX_CYLINDER];
-	t_obj			cone[MAX_CONE];
 	t_camera		cam;
+	t_projl			*projl;
+	t_objl			*objl;
+	find_type		*tab_type;
 }					t_scene;
 
 typedef struct		s_img
@@ -186,8 +189,8 @@ float			res(float a, float b, float c);
 /*
 **	inter.c
 */
-float			sphere(t_camera cam, t_obj sphere, t_vector3f ray);
-float			cylinder(t_camera cam, t_obj cylinder, t_vector3f ray);
-float			plan(t_camera cam, t_obj plan, t_vector3f ray);
+float			sphere(t_vector3f cam, t_obj sphere, t_vector3f ray);
+float			cylinder(t_vector3f cam, t_obj cylinder, t_vector3f ray);
+float			plan(t_vector3f cam, t_obj plan, t_vector3f ray);
 
 #endif /* !RT_H */

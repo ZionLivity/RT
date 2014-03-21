@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:03:00 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/02/24 12:21:19 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/21 16:16:59 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ int		main(int argc, char const *argv[])
 	t_scene		scene;
 	t_env		env;
 
-	scene.shadow = FALSE;
-	scene.brightness = FALSE;
 	if (argc < 2 || argc > 3)
 		return (error("Usage :\n", "./rt <-sb> [file.rtf]", FALSE, FALSE));
 	if (argc == 2)
