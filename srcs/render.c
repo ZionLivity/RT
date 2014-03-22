@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/21 18:37:22 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/22 18:09:04 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,22 @@
 
 #include <stdio.h>
 
-t_obj	*inter(t_scene *scene, t_vector3f ray, t_vector3f pos, t_vector3f *inter)
+void	add_cam(t_obj **obj, t_vector3f ray_d, t_vector3f ray_o)
+{
+	t_camera	*cam;
+
+	if (!(cam = (t_camera *)ft_memalloc(sizeof(t_camera))))
+		return ;
+	cam->pos = transform(ray_o, to_rotation_matrix((*obj)->rot));
+	cam->pos = transform(cam->pos, init_translation(inv((*obj)->pos)));
+	cam->ray = transform(ray_d, to_rotation_matrix((*obj)->rot));
+	(*obj)->cam = cam;
+}
+
+t_obj	*inter(t_scene *scene, t_vector3f ray_d, t_vector3f ray_o, t_vector3f *inter)
 {
 	float		t;
 	float		t2;
-	t_vector3f	tmp;
 	t_objl		*tmpl;
 	t_obj		*obj;
 
@@ -29,7 +40,15 @@ t_obj	*inter(t_scene *scene, t_vector3f ray, t_vector3f pos, t_vector3f *inter)
 	obj = NULL;
 	while (tmpl)
 	{
-		t2 = scene->tab_type[tmpl->obj->type](pos, *tmpl->obj, ray);
+		if (!tmpl->obj->cam)
+			add_cam(&tmpl->obj, ray_d, ray_o);
+		else
+		{
+			tmpl->obj->cam->pos = transform(ray_o, to_rotation_matrix(tmpl->obj->rot));
+			tmpl->obj->cam->pos = transform(tmpl->obj->cam->pos, init_translation(inv(tmpl->obj->pos)));
+			tmpl->obj->cam->ray = transform(ray_d, to_rotation_matrix(tmpl->obj->rot));
+		}
+		t2 = scene->tab_type[tmpl->obj->type](tmpl->obj->cam->pos, *tmpl->obj, tmpl->obj->cam->ray);
 		if (t2 > 0 && (t2 < t || t == -1))
 		{
 			t = t2;
@@ -39,13 +58,8 @@ t_obj	*inter(t_scene *scene, t_vector3f ray, t_vector3f pos, t_vector3f *inter)
 	}
 	if (obj && t > 0)
 	{
-		*inter = mul3f(ray, t);
-		*inter = add3v(*inter, pos);
-		*inter = sub3v(*inter, obj->pos);
-		tmp = *inter;
-		tmp = transform(tmp, init_translation(obj->pos));
-		tmp = transform(tmp, to_rotation_matrix(obj->rot));
-		*inter = tmp;
+		*inter = mul3f(obj->cam->ray, t);
+		*inter = add3v(*inter, add3v(obj->cam->pos, obj->pos));
 		return (obj);
 	}
 	return (NULL);
@@ -57,7 +71,7 @@ t_vector3f	diffuse(t_obj proj, t_obj obj, t_vector3f light_vec, t_vector3f norma
 	float		dot;
 
 	diffuse = 0;
-	dot = dot3(normalized3(inv(light_vec)), normalized3(normal));
+	dot = dot3(normalized3(light_vec), normalized3(normal));
 	if (dot > 0)
 		diffuse = dot * ((float)obj.diffuse_cmp / 100);
 	return (mul3f(proj.color, diffuse));
@@ -75,18 +89,31 @@ t_vector3f	specular(t_obj proj, t_obj obj, t_vector3f ray, t_vector3f reflected)
 	return (mul3f(proj.color, specular));
 }
 
-t_vector3f	shadows(t_scene *scene, t_obj *obj, t_vector3f light_vec, t_vector3f i)
+int		shadows(t_scene *scene, t_obj *obj, t_vector3f i, t_vector3f pos)
 {
-	t_vector3f	i2;
-	t_obj		*o;
+	float		t;
+	float		t2;
+	t_obj		*tmpobj;
+	t_objl		*tmpl;
+	t_vector3f	light_vec;
 
-	if ((o = inter(scene, inv(light_vec), i, &i2)) != NULL)
+	tmpl = scene->objl;
+	t = -1;
+	light_vec = sub3v(pos, i);
+	tmpobj = NULL;
+	while (tmpl)
 	{
-		if (o == obj)
-			return (new_vector3f(0, 0, 0));
-		return (new_vector3f(-20, -20, -20));
+		t2 = scene->tab_type[tmpl->obj->type](i, *tmpl->obj, light_vec);
+		if (t2 > 0 && t < 1 && (t2 < t || t == -1))
+		{
+			tmpobj = tmpl->obj;
+			t = t2;
+		}
+		tmpl = tmpl->next;
 	}
-	return (new_vector3f(0, 0, 0));
+	if (0 < t && t < 1 && tmpobj != obj)
+		return (1);
+	return (0);
 }
 
 t_vector3f	get_normal(t_obj obj, t_vector3f inter)
@@ -102,18 +129,21 @@ t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 
 t_vector3f	get_light_vec(t_obj proj, t_vector3f inter)
 {
-	return (sub3v(inter, inv(proj.pos)));
+	t_vector3f	light_vec;
+
+	light_vec = sub3v(inter, proj.pos);
+	return (light_vec);
 }
 
 t_vector3f	get_reflected(t_vector3f light_vec, t_vector3f normal)
 {
 	float		dot;
 
-	dot = dot3(normalized3(inv(light_vec)), normalized3(normal));
-	return (sub3v(normalized3(inv(light_vec)), mul3f(normalized3(normal), 2 * dot)));
+	dot = dot3(normalized3(light_vec), normalized3(normal));
+	return (sub3v(normalized3(light_vec), mul3f(normalized3(normal), 2 * dot)));
 }
 
-t_color	ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
+t_color		ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 {
 	t_vector3f	i;
 	t_obj		*obj;
@@ -130,11 +160,14 @@ t_color	ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 		while (tmp)
 		{
 			normal = get_normal(*obj, i);
-			light_vec = get_light_vec(*tmp->proj, i);
-			reflected = get_reflected(light_vec, normal);
-			color = add3v(color, diffuse(*tmp->proj, *obj, light_vec, normal));
-			color = add3v(color, specular(*tmp->proj, *obj, ray, reflected));
-			// color = add3v(color, shadows(scene, obj, light_vec, i));
+			light_vec = inv(get_light_vec(*tmp->proj, i));
+			if (!shadows(scene, obj, i, tmp->proj->pos))
+			{
+				reflected = get_reflected(light_vec, normal);
+				color = add3v(color, diffuse(*tmp->proj, *obj, light_vec, normal));
+				color = add3v(color, specular(*tmp->proj, *obj, obj->cam->ray, reflected));
+				// color = add3v(color, shadows(scene, obj, i, tmp->proj->pos));
+			}
 			tmp = tmp->next;
 		}
 		// printf("red: %f | green: %f | blue: %f\n", color.x, color.y, color.z);
@@ -143,11 +176,10 @@ t_color	ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 	return (rgb(0, 0, 0));
 }
 
-int		fill_img(t_scene *scene, t_img *img, t_camera cam)
+int			fill_img(t_scene *scene, t_img *img, t_camera cam)
 {
 	char		*tmp;
 	t_color		color;
-	t_vector3f	ray;
 	t_vector2f	p;
 
 	p.y = 0;
@@ -156,16 +188,15 @@ int		fill_img(t_scene *scene, t_img *img, t_camera cam)
 		p.x = 0;
 		while (p.x < WIN_W)
 		{
-			ray = new_vector3f(p.x - (WIN_W / 2), p.y - (WIN_H / 2), WIN_W);
-			ray = add3v(ray, mul3f(cam.forward, 1000));
-			color = ray_trace(scene, normalized3(ray), cam);
+			cam.ray = new_vector3f(p.x - (WIN_W / 2), p.y - (WIN_H / 2), WIN_W);
+			cam.ray = add3v(cam.ray, mul3f(cam.forward, 1000));
+			color = ray_trace(scene, normalized3(cam.ray), cam);
 			tmp = &img->data[(int)((WIN_H - p.y) * img->sizeline + p.x * (img->bpp / 8))];
 			tmp[0] = color.blue;
 			tmp[1] = color.green;
 			tmp[2] = color.red;
 			p.x++;
 		}
-
 		p.y++;
 	}
 	return (1);

@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/07 16:53:52 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/21 16:16:53 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/22 16:11:41 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,15 @@ typedef struct		s_parse
 	int				specular_cmp;
 }					t_parse;
 
+typedef struct		s_camera
+{
+	t_vector3f		pos;
+	t_vector3f		ray;
+	t_vector3f		forward;
+	t_vector3f		up;
+	t_vector3f		right;
+}					t_camera;
+
 typedef struct		s_obj
 {
 	int				type;
@@ -77,6 +86,7 @@ typedef struct		s_obj
 	t_vector3f		pos;
 	t_quaternion	rot;
 	t_vector3f		scale;
+	t_camera		*cam;
 }					t_obj;
 
 typedef struct		s_line
@@ -91,14 +101,6 @@ typedef struct		s_color
 	int				green;
 	int				blue;
 }					t_color;
-
-typedef struct		s_camera
-{
-	t_vector3f		pos;
-	t_vector3f		forward;
-	t_vector3f		up;
-	t_vector3f		right;
-}					t_camera;
 
 typedef struct		s_objl
 {

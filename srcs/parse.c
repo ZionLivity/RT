@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/24 16:40:11 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/21 16:13:03 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/22 12:34:13 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ t_obj			initobj(t_scene *scene, t_parse *p, int type)
 	obj->type = type;
 	obj->refraction = p->refraction;
 	obj->reflection = p->reflection;
+	obj->cam = NULL;
 	if (type >= 0)
 		add_obj(scene, obj);
 	else if (type == PROJ)

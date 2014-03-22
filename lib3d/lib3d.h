@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 11:28:51 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 13:19:27 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/22 13:33:02 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ t_vector2f		sub2f(t_vector2f vec1, float value);
 t_vector2f		mul2f(t_vector2f vec1, float value);
 t_vector2f		div2f(t_vector2f vec1, float value);
 t_vector2f		pow2f(t_vector2f vec1, float value);
+t_vector2f		rt2(t_vector2f vec1);
 t_vector2f		rotate2(t_vector2f vec, float angle);
 float			get_value2(t_vector2f vec);
 
@@ -78,6 +79,7 @@ t_vector3f		sub3f(t_vector3f vec1, float value);
 t_vector3f		mul3f(t_vector3f vec1, float value);
 t_vector3f		div3f(t_vector3f vec1, float value);
 t_vector3f		pow3f(t_vector3f vec1, float value);
+t_vector3f		rt3(t_vector3f vec1);
 t_vector3f		rotate3(t_vector3f vec, t_vector3f axis, float angle);
 t_vector3f		rotate3q(t_vector3f vec, t_quaternion rotation);
 float			get_value3(t_vector3f vec);
