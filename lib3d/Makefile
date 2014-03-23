@@ -14,6 +14,8 @@ include		Makefile.sources
 
 NAME		=	../lib3d.a
 
+CFLAGS	=	-Wall -Wextra -Werror -O3 -g
+
 OBJ_LIB		=	$(SRC_LIB:.c=.o)
 
 HEAD		=	lib3d.h

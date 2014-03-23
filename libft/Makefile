@@ -14,6 +14,8 @@ include		Makefile.sources
 
 NAME		=	../libft.a
 
+CFLAGS	=	-Wall -Wextra -Werror -O3 -g
+
 OBJ_LIB		=	$(SRC_LIB:.c=.o)
 
 HEAD		=	libft.h get_next_line.h define_type.h

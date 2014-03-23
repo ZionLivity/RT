@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/22 18:09:04 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/23 20:44:44 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,24 @@
 #include <libft.h>
 #include "rt.h"
 
-#include <stdio.h>
-
 void	add_cam(t_obj **obj, t_vector3f ray_d, t_vector3f ray_o)
 {
 	t_camera	*cam;
 
-	if (!(cam = (t_camera *)ft_memalloc(sizeof(t_camera))))
-		return ;
-	cam->pos = transform(ray_o, to_rotation_matrix((*obj)->rot));
-	cam->pos = transform(cam->pos, init_translation(inv((*obj)->pos)));
-	cam->ray = transform(ray_d, to_rotation_matrix((*obj)->rot));
-	(*obj)->cam = cam;
+	cam = NULL;
+	if (!(*obj)->cam)
+	{
+		if (!(cam = (t_camera *)ft_memalloc(sizeof(t_camera))))
+			return ;
+		cam->pos = get_transforms(ray_o, inv3((*obj)->pos), conjugate4((*obj)->rot));
+		cam->ray = get_transforms(ray_d, new_vector3f(0, 0, 0), conjugate4((*obj)->rot));
+		(*obj)->cam = cam;
+	}
+	else
+	{
+		(*obj)->cam->pos = get_transforms(ray_o, inv3((*obj)->pos), conjugate4((*obj)->rot));
+		(*obj)->cam->ray = get_transforms(ray_d, new_vector3f(0, 0, 0), conjugate4((*obj)->rot));
+	}
 }
 
 t_obj	*inter(t_scene *scene, t_vector3f ray_d, t_vector3f ray_o, t_vector3f *inter)
@@ -40,14 +46,7 @@ t_obj	*inter(t_scene *scene, t_vector3f ray_d, t_vector3f ray_o, t_vector3f *int
 	obj = NULL;
 	while (tmpl)
 	{
-		if (!tmpl->obj->cam)
-			add_cam(&tmpl->obj, ray_d, ray_o);
-		else
-		{
-			tmpl->obj->cam->pos = transform(ray_o, to_rotation_matrix(tmpl->obj->rot));
-			tmpl->obj->cam->pos = transform(tmpl->obj->cam->pos, init_translation(inv(tmpl->obj->pos)));
-			tmpl->obj->cam->ray = transform(ray_d, to_rotation_matrix(tmpl->obj->rot));
-		}
+		add_cam(&tmpl->obj, ray_d, ray_o);
 		t2 = scene->tab_type[tmpl->obj->type](tmpl->obj->cam->pos, *tmpl->obj, tmpl->obj->cam->ray);
 		if (t2 > 0 && (t2 < t || t == -1))
 		{
@@ -59,61 +58,18 @@ t_obj	*inter(t_scene *scene, t_vector3f ray_d, t_vector3f ray_o, t_vector3f *int
 	if (obj && t > 0)
 	{
 		*inter = mul3f(obj->cam->ray, t);
-		*inter = add3v(*inter, add3v(obj->cam->pos, obj->pos));
+		*inter = get_transforms(*inter, add3v(obj->cam->pos, obj->pos), conjugate4(obj->rot));
 		return (obj);
 	}
 	return (NULL);
 }
 
-t_vector3f	diffuse(t_obj proj, t_obj obj, t_vector3f light_vec, t_vector3f normal)
+t_vector3f	get_reflected(t_vector3f light_vec, t_vector3f normal)
 {
-	float		diffuse;
 	float		dot;
 
-	diffuse = 0;
 	dot = dot3(normalized3(light_vec), normalized3(normal));
-	if (dot > 0)
-		diffuse = dot * ((float)obj.diffuse_cmp / 100);
-	return (mul3f(proj.color, diffuse));
-}
-
-t_vector3f	specular(t_obj proj, t_obj obj, t_vector3f ray, t_vector3f reflected)
-{
-	float		specular;
-	float		dot;
-
-	specular = 0;
-	dot = dot3(normalized3(inv(ray)), normalized3(inv(reflected)));
-	if (dot > 0)
-		specular = pow(dot, 20) * ((float)obj.specular_cmp / 100) * (obj.reflection / 10);
-	return (mul3f(proj.color, specular));
-}
-
-int		shadows(t_scene *scene, t_obj *obj, t_vector3f i, t_vector3f pos)
-{
-	float		t;
-	float		t2;
-	t_obj		*tmpobj;
-	t_objl		*tmpl;
-	t_vector3f	light_vec;
-
-	tmpl = scene->objl;
-	t = -1;
-	light_vec = sub3v(pos, i);
-	tmpobj = NULL;
-	while (tmpl)
-	{
-		t2 = scene->tab_type[tmpl->obj->type](i, *tmpl->obj, light_vec);
-		if (t2 > 0 && t < 1 && (t2 < t || t == -1))
-		{
-			tmpobj = tmpl->obj;
-			t = t2;
-		}
-		tmpl = tmpl->next;
-	}
-	if (0 < t && t < 1 && tmpobj != obj)
-		return (1);
-	return (0);
+	return (sub3v(normalized3(light_vec), mul3f(normalized3(normal), 2 * dot)));
 }
 
 t_vector3f	get_normal(t_obj obj, t_vector3f inter)
@@ -127,51 +83,30 @@ t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 	return (new_vector3f(0, 0, 0));
 }
 
-t_vector3f	get_light_vec(t_obj proj, t_vector3f inter)
-{
-	t_vector3f	light_vec;
-
-	light_vec = sub3v(inter, proj.pos);
-	return (light_vec);
-}
-
-t_vector3f	get_reflected(t_vector3f light_vec, t_vector3f normal)
-{
-	float		dot;
-
-	dot = dot3(normalized3(light_vec), normalized3(normal));
-	return (sub3v(normalized3(light_vec), mul3f(normalized3(normal), 2 * dot)));
-}
-
 t_color		ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 {
 	t_vector3f	i;
 	t_obj		*obj;
-	t_vector3f	color;
-	t_vector3f	normal;
-	t_vector3f	light_vec;
-	t_vector3f	reflected;
+	t_vector3f	v[4];
 	t_projl		*tmp;
 
 	tmp = scene->projl;
 	if ((obj = inter(scene, ray, cam.pos, &i)))
 	{
-		color = mul3f(obj->color, AMBIENT);
+		v[COLOR] = mul3f(obj->color, AMBIENT);
 		while (tmp)
 		{
-			normal = get_normal(*obj, i);
-			light_vec = inv(get_light_vec(*tmp->proj, i));
-			if (!shadows(scene, obj, i, tmp->proj->pos))
+			v[LIGHT_VEC] = sub3v(tmp->proj->pos, i);
+			if (!shadows(scene, obj, v[LIGHT_VEC], i))
 			{
-				reflected = get_reflected(light_vec, normal);
-				color = add3v(color, diffuse(*tmp->proj, *obj, light_vec, normal));
-				color = add3v(color, specular(*tmp->proj, *obj, obj->cam->ray, reflected));
-				// color = add3v(color, shadows(scene, obj, i, tmp->proj->pos));
+				v[NORMAL] = get_normal(*obj, i);
+				v[REFLECTED] = get_reflected(v[LIGHT_VEC], v[NORMAL]);
+				v[COLOR] = add3v(v[COLOR], diffuse(*tmp->proj, *obj, v[LIGHT_VEC], v[NORMAL]));
+				v[COLOR] = add3v(v[COLOR], specular(*tmp->proj, *obj, obj->cam->ray, v[REFLECTED]));
 			}
 			tmp = tmp->next;
 		}
-		// printf("red: %f | green: %f | blue: %f\n", color.x, color.y, color.z);
-		return (rgbv(color));
+		return (rgbv(v[COLOR]));
 	}
 	return (rgb(0, 0, 0));
 }

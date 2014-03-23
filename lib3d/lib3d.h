@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 11:28:51 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/22 13:33:02 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/23 18:09:18 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ float			length2(t_vector2f vec);
 float			dot2(t_vector2f vec1, t_vector2f vec2);
 float			cross2(t_vector2f vec1, t_vector2f vec2);
 t_vector2f		normalized2(t_vector2f vec);
+t_vector2f		inv2(t_vector2f vec);
 t_vector2f		add2v(t_vector2f vec1, t_vector2f vec2);
 t_vector2f		sub2v(t_vector2f vec1, t_vector2f vec2);
 t_vector2f		mul2v(t_vector2f vec1, t_vector2f vec2);
@@ -69,7 +70,7 @@ float			length3(t_vector3f vec);
 float			dot3(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		cross3(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		normalized3(t_vector3f vec);
-t_vector3f		inv(t_vector3f vec);
+t_vector3f		inv3(t_vector3f vec);
 t_vector3f		add3v(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		sub3v(t_vector3f vec1, t_vector3f vec2);
 t_vector3f		mul3v(t_vector3f vec1, t_vector3f vec2);
@@ -93,7 +94,6 @@ t_matrix4f		init_rotation3f(float x, float y, float z);
 t_matrix4f		init_translation(t_vector3f vec);
 t_matrix4f		init_rotation3v(t_vector3f f, t_vector3f u, t_vector3f r);
 t_matrix4f		init_scale(float x, float y, float z);
-t_vector3f		transform(t_vector3f v, t_matrix4f m);
 
 /*
 **	quaternion
@@ -108,9 +108,15 @@ t_quaternion	mul4q(t_quaternion q, t_quaternion r);
 t_quaternion	mul4v(t_quaternion q, t_vector3f r);
 
 /*
+**	transforms
+*/
+t_vector3f		transform(t_vector3f v, t_matrix4f m);
+t_vector3f		get_transforms(t_vector3f v, t_vector3f t, t_quaternion r);
+
+/*
 **	utils
 */
-float		to_radians(float angle);
-float		rt(float val);
+float			to_radians(float angle);
+float			rt(float val);
 
 #endif /* !LIB3D_H */

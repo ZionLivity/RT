@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/24 16:40:11 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/22 12:34:13 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/23 18:33:49 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ void			fill_obj(t_parse *obj, int *nb_line, char *line)
 	obj->blue = (!ft_strcmp(l.var, "blue")) ? l.value : obj->blue;
 	obj->intens = (!ft_strcmp(l.var, "intensity")) ? l.value : obj->intens;
 	obj->diameter = (!ft_strcmp(l.var, "diameter")) ? l.value : obj->diameter;
-	obj->diffuse_cmp = (!ft_strcmp(l.var, "diffuse_cmp")) ? l.value : obj->diffuse_cmp;
-	obj->specular_cmp = (!ft_strcmp(l.var, "specular_cmp")) ? l.value : obj->specular_cmp;
-	obj->reflection = (!ft_strcmp(l.var, "reflection")) ? l.value : obj->reflection;
-	obj->refraction = (!ft_strcmp(l.var, "refraction")) ? l.value : obj->refraction;
+	obj->diffuse = (!ft_strcmp(l.var, "diffuse")) ? l.value : obj->diffuse;
+	obj->specular = (!ft_strcmp(l.var, "specular")) ? l.value : obj->specular;
+	obj->reflec = (!ft_strcmp(l.var, "reflection")) ? l.value : obj->reflec;
+	obj->refrac = (!ft_strcmp(l.var, "refraction")) ? l.value : obj->refrac;
 }
 
 void			rotate(t_quaternion	*rot, t_vector3f axis, float angle)
@@ -115,17 +115,37 @@ t_obj			initobj(t_scene *scene, t_parse *p, int type)
 	obj->color = new_vector3f(p->red, p->green, p->blue);
 	obj->diameter = p->diameter;
 	obj->intens = p->intens;
-	obj->diffuse_cmp = p->diffuse_cmp;
-	obj->specular_cmp = p->specular_cmp;
+	obj->diffuse = p->diffuse;
+	obj->specular = p->specular;
 	obj->type = type;
-	obj->refraction = p->refraction;
-	obj->reflection = p->reflection;
+	obj->refrac = p->refrac;
+	obj->reflec = p->reflec;
 	obj->cam = NULL;
 	if (type >= 0)
 		add_obj(scene, obj);
 	else if (type == PROJ)
 		add_proj(scene, obj);
 	return (*obj);
+}
+
+void			init_obj(t_parse *obj)
+{
+	obj->rot_x = 0;
+	obj->rot_y = 0;
+	obj->rot_z = 0;
+	obj->pos_x = 0;
+	obj->pos_y = 0;
+	obj->pos_z = 0;
+	obj->red = 0;
+	obj->green = 0;
+	obj->blue = 0;
+	obj->diameter = 100;
+	obj->intens = 100;
+	obj->diffuse = 20;
+	obj->specular = 20;
+	obj->type = 0;
+	obj->refrac = 0;
+	obj->reflec = 0;
 }
 
 t_obj			fill(t_scene *scene, int fd, int *nb_line, int type)
@@ -135,6 +155,7 @@ t_obj			fill(t_scene *scene, int fd, int *nb_line, int type)
 	t_parse	obj;
 
 	i = 0;
+	init_obj(&obj);
 	while (get_next_line(fd, &line) > 0)
 	{
 		if (ft_strcmp(line, "{") && !i)
@@ -175,7 +196,7 @@ int				find_obj(t_scene *s, int fd, char *l, int *nl)
 	return (1);
 }
 
-void	init_type(find_type **tab_type)
+void			init_type(find_type **tab_type)
 {
 	*tab_type = (find_type *)ft_memalloc(sizeof(find_type) * 3);
 	(*tab_type)[0] = &sphere;
@@ -194,12 +215,6 @@ t_scene			parse(char *file)
 	scene.objl = NULL;
 	init_type(&scene.tab_type);
 	scene.count_obj = 0;
-	// scene.elem.count_obj = 0;
-	// scene.elem.nb_proj = 0;
-	// scene.elem.nb_sphere = 0;
-	// scene.elem.nb_plan = 0;
-	// scene.elem.nb_cylinder = 0;
-	// scene.elem.nb_cone = 0;
 	if (!(fd = open_file(file)))
 		return (scene);
 	while (get_next_line(fd, &line) > 0)

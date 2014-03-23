@@ -6,13 +6,11 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 14:48:54 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/22 17:18:23 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/23 17:57:27 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt.h"
-
-#include <stdio.h>
 
 float		sphere(t_vector3f pos, t_obj sphere, t_vector3f ray)
 {
@@ -45,9 +43,9 @@ float		plan(t_vector3f pos, t_obj plan, t_vector3f ray)
 {
 	float		d;
 
-	(void)ray;
+	(void)plan;
 	if (fabs(ray.y) < 0.00001)
 		return (-1);
-	d = (plan.pos.y - pos.y) / ray.y;
-	return (d);
+	d = pos.y / ray.y;
+	return (-d);
 }

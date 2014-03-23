@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/07 16:53:52 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/22 16:11:41 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/23 19:50:11 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,11 @@
 
 # define CAM -2
 # define PROJ -1
+
+#define COLOR 0
+#define NORMAL 1
+#define LIGHT_VEC 2
+#define REFLECTED 3
 
 enum		e_obj
 {
@@ -52,16 +57,16 @@ typedef struct		s_parse
 	int				blue;
 	float			intens;
 	float			diameter;
-	int				refraction;
-	int				reflection;
+	int				refrac;
+	int				reflec;
 	int				rot_x;
 	int				rot_y;
 	int				rot_z;
 	int				pos_x;
 	int				pos_y;
 	int				pos_z;
-	int				diffuse_cmp;
-	int				specular_cmp;
+	int				diffuse;
+	int				specular;
 }					t_parse;
 
 typedef struct		s_camera
@@ -76,10 +81,10 @@ typedef struct		s_camera
 typedef struct		s_obj
 {
 	int				type;
-	int				diffuse_cmp;
-	int				specular_cmp;
-	int				refraction;
-	int				reflection;
+	int				diffuse;
+	int				specular;
+	int				refrac;
+	int				reflec;
 	float			diameter;
 	float			intens;
 	t_vector3f		color;
@@ -194,5 +199,12 @@ float			res(float a, float b, float c);
 float			sphere(t_vector3f cam, t_obj sphere, t_vector3f ray);
 float			cylinder(t_vector3f cam, t_obj cylinder, t_vector3f ray);
 float			plan(t_vector3f cam, t_obj plan, t_vector3f ray);
+
+/*
+**	light.c
+*/
+t_vector3f	diffuse(t_obj proj, t_obj obj, t_vector3f light_vec, t_vector3f normal);
+t_vector3f	specular(t_obj proj, t_obj obj, t_vector3f ray, t_vector3f reflected);
+int			shadows(t_scene *scene, t_obj *obj, t_vector3f ray_d, t_vector3f ray_o);
 
 #endif /* !RT_H */

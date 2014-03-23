@@ -30,4 +30,7 @@ SRC_LIB		=	utils.c				\
 				vector3f_rotate.c	\
 				quaternion.c		\
 				quaternion_mul.c	\
-				matrix4f.c
+				quaternion_rot.c	\
+				matrix4f.c			\
+				matrix4f_rot.c		\
+				transforms.c

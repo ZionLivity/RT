@@ -6,20 +6,20 @@
 #    By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/26 13:13:47 by rbenjami          #+#    #+#              #
-#    Updated: 2014/03/07 17:32:17 by rbenjami         ###   ########.fr        #
+#    Updated: 2014/03/23 17:45:21 by rbenjami         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 include		libft/Makefile.sources
 include		lib3d/Makefile.sources
 
-export	CFLAGS	=	-Wall -Wextra -Werror -g
-
 export	CC		=	cc
 
 export	INC		=	-I $(PWD)/libft -I $(PWD)/lib3d
 
 NAME		=	rt
+
+CFLAGS	=	-Wall -Wextra -Werror -O3 -g
 
 INC			+=	-I includes -I/usr/X11R6/include
 
@@ -36,7 +36,8 @@ FILES		=	$(NAME).c	\
 				color.c		\
 				camera.c	\
 				inter.c		\
-				utils.c
+				utils.c		\
+				light.c
 
 SRC			=	$(addprefix $(SRC_DIR)/, $(FILES))
 

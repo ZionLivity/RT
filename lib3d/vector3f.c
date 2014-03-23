@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:24:50 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/19 13:19:09 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/23 17:20:43 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,4 @@ t_vector3f	normalized3(t_vector3f vec)
 	float	length = length3(vec);
 
 	return (new_vector3f(vec.x / length, vec.y / length, vec.z / length));
-}
-
-t_vector3f	inv(t_vector3f vec)
-{
-	return (new_vector3f(-vec.x, -vec.y, -vec.z));
 }
