@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 14:48:54 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 17:57:27 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/24 17:08:15 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,23 @@ float		plan(t_vector3f pos, t_obj plan, t_vector3f ray)
 		return (-1);
 	d = pos.y / ray.y;
 	return (-d);
+}
+
+float		cone(t_vector3f pos, t_obj cone, t_vector3f ray)
+{
+	float	a;
+	float	b;
+	float	c;
+	float	r;
+
+	r = cone.diameter / 200;
+	a = rt(ray.x) + rt(ray.z) - (rt(r) * rt(ray.y));
+	b =	ray.x * pos.x;
+	b += ray.z * pos.z;
+	b -= ray.y * rt(r) * pos.y;
+	b *= 2;
+	c = rt(pos.x);
+	c += rt(pos.z);
+	c -= rt(r) * rt(pos.y);
+	return (res(a, b, c));
 }

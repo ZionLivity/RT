@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/13 17:42:35 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 17:58:51 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/24 17:20:51 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,34 +41,34 @@ static void		debug(t_env *e)
 
 static void		move_cam(int keycode, t_env *e)
 {
-	if (keycode == 65362)
-		move(&e->cam, e->cam.forward, 100);
-	if (keycode == 65364)
-		move(&e->cam, e->cam.forward, -100);
-	if (keycode == 65361)
-		move(&e->cam, e->cam.right, -20);
-	if (keycode == 65363)
-		move(&e->cam, e->cam.right, 20);
+	if (keycode == 119)
+		move(&e->cam, e->cam.forward, 50);
+	if (keycode == 115)
+		move(&e->cam, e->cam.forward, -50);
+	if (keycode == 97)
+		move(&e->cam, e->cam.right, -50);
+	if (keycode == 100)
+		move(&e->cam, e->cam.right, 50);
 	if (keycode == 32)
-		move(&e->cam, e->cam.up, 20);
+		move(&e->cam, e->cam.up, 50);
 	if (keycode == 65505)
-		move(&e->cam, e->cam.up, -20);
+		move(&e->cam, e->cam.up, -50);
 }
 
 static void		rot_cam(int keycode, t_env *e)
 {
-	if (keycode == 65464)
-		rotate_x(&e->cam, 20);
-	if (keycode == 65458)
-		rotate_x(&e->cam, -20);
-	if (keycode == 65457)
-		rotate_y(&e->cam, -20);
-	if (keycode == 65459)
-		rotate_y(&e->cam, 20);
+	if (keycode == 65362)
+		rotate_x(&e->cam, 5);
+	if (keycode == 65364)
+		rotate_x(&e->cam, -5);
+	if (keycode == 65361)
+		rotate_y(&e->cam, -5);
+	if (keycode == 65363)
+		rotate_y(&e->cam, 5);
 	if (keycode == 65460)
-		rotate_z(&e->cam, 20);
-	if (keycode == 65452)
-		rotate_z(&e->cam, -20);
+		rotate_z(&e->cam, 5);
+	if (keycode == 65462)
+		rotate_z(&e->cam, -5);
 }
 
 int				key_hook(int keycode, t_env *e)

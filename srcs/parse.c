@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/01/24 16:40:11 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 18:33:49 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/24 10:27:40 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,10 +198,11 @@ int				find_obj(t_scene *s, int fd, char *l, int *nl)
 
 void			init_type(find_type **tab_type)
 {
-	*tab_type = (find_type *)ft_memalloc(sizeof(find_type) * 3);
+	*tab_type = (find_type *)ft_memalloc(sizeof(find_type) * 4);
 	(*tab_type)[0] = &sphere;
 	(*tab_type)[1] = &cylinder;
 	(*tab_type)[2] = &plan;
+	(*tab_type)[3] = &cone;
 }
 
 t_scene			parse(char *file)

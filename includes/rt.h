@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/07 16:53:52 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 19:50:11 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/24 17:41:56 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@
 # define CAM -2
 # define PROJ -1
 
-#define COLOR 0
-#define NORMAL 1
-#define LIGHT_VEC 2
-#define REFLECTED 3
+# define COLOR 0
+# define NORMAL 1
+# define LIGHT_VEC 2
+# define REFLECTED 3
 
 enum		e_obj
 {
@@ -199,6 +199,7 @@ float			res(float a, float b, float c);
 float			sphere(t_vector3f cam, t_obj sphere, t_vector3f ray);
 float			cylinder(t_vector3f cam, t_obj cylinder, t_vector3f ray);
 float			plan(t_vector3f cam, t_obj plan, t_vector3f ray);
+float			cone(t_vector3f pos, t_obj cone, t_vector3f ray);
 
 /*
 **	light.c

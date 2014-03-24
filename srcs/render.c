@@ -6,13 +6,15 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 20:44:44 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/24 18:09:52 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <mlx.h>
 #include <libft.h>
 #include "rt.h"
+
+#include <stdio.h>
 
 void	add_cam(t_obj **obj, t_vector3f ray_d, t_vector3f ray_o)
 {
@@ -58,7 +60,8 @@ t_obj	*inter(t_scene *scene, t_vector3f ray_d, t_vector3f ray_o, t_vector3f *int
 	if (obj && t > 0)
 	{
 		*inter = mul3f(obj->cam->ray, t);
-		*inter = get_transforms(*inter, add3v(obj->cam->pos, obj->pos), conjugate4(obj->rot));
+		*inter = get_transforms(*inter, new_vector3f(0, 0, 0), obj->rot);
+		*inter = get_transforms(*inter, ray_o, new_quaternion4f(0, 0, 0, 1));
 		return (obj);
 	}
 	return (NULL);
@@ -74,12 +77,23 @@ t_vector3f	get_reflected(t_vector3f light_vec, t_vector3f normal)
 
 t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 {
+	t_vector3f	pos;
+	t_vector3f	i;
+	float		tmp;
+
+	pos = get_transforms(obj.pos, new_vector3f(0, 0, 0), conjugate4(obj.rot));
+	// pos = get_transforms(pos, obj.pos, new_quaternion4f(0, 0, 0, 1));
+	i = get_transforms(inter, new_vector3f(0, 0, 0), conjugate4(obj.rot));
+	// i = get_transforms(i, obj.pos, new_quaternion4f(0, 0, 0, 1));
 	if (obj.type == SPHERE)
 		return (sub3v(inter, obj.pos));
 	if (obj.type == CYLINDER)
-		return (new_vector3f(inter.x - obj.pos.x, 0, inter.z - obj.pos.z));
+		return (new_vector3f(i.x - pos.x, 0, i.z - pos.z));
 	if (obj.type == PLAN)
 		return (new_vector3f(0, 1, 0));
+	tmp = -i.y - pos.y * tan(rt(obj.diameter / 2));
+	if (obj.type == CONE)
+		return (new_vector3f(i.x - pos.x, tmp, i.z - pos.z));
 	return (new_vector3f(0, 0, 0));
 }
 
@@ -102,7 +116,7 @@ t_color		ray_trace(t_scene *scene, t_vector3f ray, t_camera cam)
 				v[NORMAL] = get_normal(*obj, i);
 				v[REFLECTED] = get_reflected(v[LIGHT_VEC], v[NORMAL]);
 				v[COLOR] = add3v(v[COLOR], diffuse(*tmp->proj, *obj, v[LIGHT_VEC], v[NORMAL]));
-				v[COLOR] = add3v(v[COLOR], specular(*tmp->proj, *obj, obj->cam->ray, v[REFLECTED]));
+				v[COLOR] = add3v(v[COLOR], specular(*tmp->proj, *obj, sub3v(i, cam.pos), v[REFLECTED]));
 			}
 			tmp = tmp->next;
 		}
@@ -149,8 +163,8 @@ int		render(t_env *env, t_scene *scene)
 	env->screen.data = mlx_get_data_addr(env->screen.img, &env->screen.bpp, \
 												&env->screen.sizeline, &e);
 	scene->cam = new_camera(scene->camera.pos);
-	rotate_x(&env->cam, scene->camera.rot.x);
-	rotate_y(&env->cam, scene->camera.rot.y);
+	rotate_x(&scene->cam, scene->camera.rot.x);
+	rotate_y(&scene->cam, scene->camera.rot.y);
 	fill_img(scene, &env->screen, scene->cam);
 	env->scene = scene;
 	env->cam = scene->cam;
