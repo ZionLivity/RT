@@ -6,15 +6,13 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:19:31 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/24 18:09:52 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/25 11:53:54 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <mlx.h>
 #include <libft.h>
 #include "rt.h"
-
-#include <stdio.h>
 
 void	add_cam(t_obj **obj, t_vector3f ray_d, t_vector3f ray_o)
 {
@@ -82,15 +80,13 @@ t_vector3f	get_normal(t_obj obj, t_vector3f inter)
 	float		tmp;
 
 	pos = get_transforms(obj.pos, new_vector3f(0, 0, 0), conjugate4(obj.rot));
-	// pos = get_transforms(pos, obj.pos, new_quaternion4f(0, 0, 0, 1));
 	i = get_transforms(inter, new_vector3f(0, 0, 0), conjugate4(obj.rot));
-	// i = get_transforms(i, obj.pos, new_quaternion4f(0, 0, 0, 1));
 	if (obj.type == SPHERE)
 		return (sub3v(inter, obj.pos));
 	if (obj.type == CYLINDER)
 		return (new_vector3f(i.x - pos.x, 0, i.z - pos.z));
 	if (obj.type == PLAN)
-		return (new_vector3f(0, 1, 0));
+		return (get_transforms(new_vector3f(0, 1, 0), new_vector3f(0, 0, 0), obj.rot));
 	tmp = -i.y - pos.y * tan(rt(obj.diameter / 2));
 	if (obj.type == CONE)
 		return (new_vector3f(i.x - pos.x, tmp, i.z - pos.z));

@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/23 17:13:33 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/24 17:42:14 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/25 11:58:17 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,13 @@ int			shadows(t_scene *s, t_obj *obj, t_vector3f ray_d, t_vector3f ray_o)
 	tmpobj = NULL;
 	while (tmpl)
 	{
-		tmp[0] = get_transforms(ray_o, inv3(tmpl->obj->pos), conjugate4(tmpl->obj->rot));
-		tmp[1] = get_transforms(ray_d, new_vector3f(0, 0, 0), conjugate4(tmpl->obj->rot));
+		tmp[0] = ray_o;
+		tmp[1] = ray_d;
+		if (tmpl->obj->type != PLAN)
+		{
+			tmp[0] = get_transforms(ray_o, inv3(tmpl->obj->pos), conjugate4(tmpl->obj->rot));
+			tmp[1] = get_transforms(ray_d, new_vector3f(0, 0, 0), conjugate4(tmpl->obj->rot));
+		}
 		t2 = s->tab_type[tmpl->obj->type](tmp[0], *tmpl->obj, tmp[1]);
 		if (t2 > 0 && t < 1 && (t2 < t || t == -1))
 		{
