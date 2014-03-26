@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/13 17:42:35 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/24 17:20:51 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 15:24:10 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,17 @@ static void		debug(t_env *e)
 static void		move_cam(int keycode, t_env *e)
 {
 	if (keycode == 119)
-		move(&e->cam, e->cam.forward, 50);
+		move(&e->cam, e->cam.f, 50);
 	if (keycode == 115)
-		move(&e->cam, e->cam.forward, -50);
+		move(&e->cam, e->cam.f, -50);
 	if (keycode == 97)
-		move(&e->cam, e->cam.right, -50);
+		move(&e->cam, e->cam.r, -50);
 	if (keycode == 100)
-		move(&e->cam, e->cam.right, 50);
+		move(&e->cam, e->cam.r, 50);
 	if (keycode == 32)
-		move(&e->cam, e->cam.up, 50);
+		move(&e->cam, e->cam.u, 50);
 	if (keycode == 65505)
-		move(&e->cam, e->cam.up, -50);
+		move(&e->cam, e->cam.u, -50);
 }
 
 static void		rot_cam(int keycode, t_env *e)

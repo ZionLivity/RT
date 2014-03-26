@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/03/23 17:22:59 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 17:50:04 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:05:22 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static t_matrix4f	init_rotation_x(float x)
 	rx.m[3][3] = 1;
 	return (rx);
 }
+
 static t_matrix4f	init_rotation_y(float y)
 {
 	t_matrix4f	ry;
@@ -90,7 +91,6 @@ t_matrix4f			init_rotation3f(float x, float y, float z)
 	x = to_radians(x);
 	y = to_radians(y);
 	z = to_radians(z);
-
 	rx = init_rotation_x(x);
 	ry = init_rotation_y(y);
 	rz = init_rotation_z(z);

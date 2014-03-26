@@ -14,7 +14,7 @@ include		Makefile.sources
 
 NAME		=	../lib3d.a
 
-CFLAGS	=	-Wall -Wextra -Werror -O3 -g
+CFLAGS	=	-Wall -Wextra -Werror -O3 -g -pedantic
 
 OBJ_LIB		=	$(SRC_LIB:.c=.o)
 

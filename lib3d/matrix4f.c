@@ -6,13 +6,13 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 15:19:24 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 18:05:50 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:04:35 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lib3d.h"
 
-t_matrix4f		new_matrix4()
+t_matrix4f		new_matrix4(void)
 {
 	t_matrix4f	res;
 
@@ -20,17 +20,14 @@ t_matrix4f		new_matrix4()
 	res.m[0][1] = 0;
 	res.m[0][2] = 0;
 	res.m[0][3] = 0;
-
 	res.m[1][0] = 0;
 	res.m[1][1] = 1;
 	res.m[1][2] = 0;
 	res.m[1][3] = 0;
-
 	res.m[2][0] = 0;
 	res.m[2][1] = 0;
 	res.m[2][2] = 1;
 	res.m[2][3] = 0;
-
 	res.m[3][0] = 0;
 	res.m[3][1] = 0;
 	res.m[3][2] = 0;
@@ -50,7 +47,7 @@ t_matrix4f		mul4m(t_matrix4f m, t_matrix4f r)
 		j = 0;
 		while (j < 4)
 		{
-			res.m[i][j] =	m.m[i][0] * r.m[0][j] + \
+			res.m[i][j] = m.m[i][0] * r.m[0][j] + \
 							m.m[i][1] * r.m[1][j] + \
 							m.m[i][2] * r.m[2][j] + \
 							m.m[i][3] * r.m[3][j];

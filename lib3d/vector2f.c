@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:24:33 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/02/25 15:20:33 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:08:57 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ float		cross2(t_vector2f vec1, t_vector2f vec2)
 
 t_vector2f	normalized2(t_vector2f vec)
 {
-	float	length = length2(vec);
+	float	length;
 
+	length = length2(vec);
 	return (new_vector2f(vec.x / length, vec.y / length));
 }

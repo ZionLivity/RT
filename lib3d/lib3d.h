@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/25 11:28:51 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/24 11:11:22 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:15:52 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,31 @@
 # define LIB3D_H
 # include <math.h>
 
-typedef struct			s_vector2f
+typedef struct	s_vector2f
 {
-	float				x;
-	float				y;
-}						t_vector2f;
+	float		x;
+	float		y;
+}				t_vector2f;
 
-typedef struct			s_vector3f
+typedef struct	s_vector3f
 {
-	float				x;
-	float				y;
-	float				z;
-}						t_vector3f;
+	float		x;
+	float		y;
+	float		z;
+}				t_vector3f;
 
-typedef struct			s_quaternion
+typedef struct	s_quaternion
 {
-	float				x;
-	float				y;
-	float				z;
-	float				w;
-}						t_quaternion;
+	float		x;
+	float		y;
+	float		z;
+	float		w;
+}				t_quaternion;
 
-typedef struct			s_matrix4f
+typedef struct	s_matrix4f
 {
-	float				m[4][4];
-}						t_matrix4f;
+	float		m[4][4];
+}				t_matrix4f;
 
 /*
 **	vector2f
@@ -119,4 +119,4 @@ t_vector3f		get_transforms(t_vector3f v, t_vector3f t, t_quaternion r);
 float			to_radians(float angle);
 float			rt(float val);
 
-#endif /* !LIB3D_H */
+#endif

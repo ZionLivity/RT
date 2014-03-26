@@ -6,13 +6,13 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/20 10:23:09 by rbenjami          #+#    #+#             */
-/*   Updated: 2013/11/20 10:25:31 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:00:38 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_memcmp(const void* s1, const void* s2, size_t n)
+int		ft_memcmp(const void *s1, const void *s2, size_t n)
 {
 	if (n > 0)
 	{

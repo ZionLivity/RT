@@ -6,7 +6,7 @@
 #    By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/26 13:13:47 by rbenjami          #+#    #+#              #
-#    Updated: 2014/03/23 17:45:21 by rbenjami         ###   ########.fr        #
+#    Updated: 2014/03/26 17:20:48 by rbenjami         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ export	INC		=	-I $(PWD)/libft -I $(PWD)/lib3d
 
 NAME		=	rt
 
-CFLAGS	=	-Wall -Wextra -Werror -O3 -g
+CFLAGS	=	-Wall -Wextra -Werror -O3 -g -pedantic
 
 INC			+=	-I includes -I/usr/X11R6/include
 
@@ -37,7 +37,10 @@ FILES		=	$(NAME).c	\
 				camera.c	\
 				inter.c		\
 				utils.c		\
-				light.c
+				light.c		\
+				obj_inter.c	\
+				obj.c		\
+				pixel.c
 
 SRC			=	$(addprefix $(SRC_DIR)/, $(FILES))
 

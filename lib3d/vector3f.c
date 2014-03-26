@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 12:24:50 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/23 17:20:43 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:09:11 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ t_vector3f	cross3(t_vector3f vec1, t_vector3f vec2)
 
 t_vector3f	normalized3(t_vector3f vec)
 {
-	float	length = length3(vec);
+	float	length;
 
+	length = length3(vec);
 	return (new_vector3f(vec.x / length, vec.y / length, vec.z / length));
 }

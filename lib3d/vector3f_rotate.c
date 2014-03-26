@@ -6,7 +6,7 @@
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/24 16:19:46 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/17 13:32:03 by rbenjami         ###   ########.fr       */
+/*   Updated: 2014/03/26 17:08:26 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 t_vector3f	rotate3(t_vector3f vec, t_vector3f axis, float angle)
 {
-	float 		sin_angle;
-	float 		cos_angle;
+	float		sin_angle;
+	float		cos_angle;
 	t_vector3f	tmp;
 
 	sin_angle = (float)sin(-angle);

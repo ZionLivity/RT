@@ -5,35 +5,76 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rbenjami <rbenjami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2014/01/24 16:43:00 by rbenjami          #+#    #+#             */
-/*   Updated: 2014/03/07 17:24:40 by rbenjami         ###   ########.fr       */
+/*   Created: 2014/03/04 16:26:15 by rbenjami          #+#    #+#             */
+/*   Updated: 2014/03/26 14:53:41 by rbenjami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include <stdarg.h>
 #include <libft.h>
 #include "rt.h"
 
-int		error(const char *s1, char *s2, int exit_bool, int details)
+/*
+**	Error:
+**	%c -> char
+**	%s -> char*
+**	%d -> int
+*/
+
+int		ft_putcolored_char(char c, int color)
 {
-	ft_putstr_fd("rtv1: \033[31m", 2);
-	if (!s2)
+	if (color == BLACK)
+		ft_putstr("\033[30m");
+	if (color == RED)
+		ft_putstr("\033[31m");
+	if (color == GREEN)
+		ft_putstr("\033[32m");
+	if (color == YELLOW)
+		ft_putstr("\033[33m");
+	if (color == BLUE)
+		ft_putstr("\033[34m");
+	if (color == MAGENTA)
+		ft_putstr("\033[35m");
+	if (color == CYAN)
+		ft_putstr("\033[36m");
+	if (color == WITHE)
+		ft_putstr("\033[37m");
+	ft_putchar(c);
+	ft_putstr("\033[m");
+	return (1);
+}
+
+void	print_arg(char c, va_list ap)
+{
+	if (c == '%')
+		ft_putchar_fd('%', 2);
+	else if (c == 'c')
+		ft_putchar_fd(va_arg(ap, int), 2);
+	else if (c == 's')
+		ft_putstr_fd(va_arg(ap, char*), 2);
+	else if (c == 'd')
+		ft_putnbr_fd(va_arg(ap, int), 2);
+}
+
+int		error(int quit, const char *msg, ...)
+{
+	va_list		ap;
+
+	ft_putstr_fd("RT: ", 2);
+	va_start(ap, msg);
+	while (*msg)
 	{
-		ft_putendl_fd(s1, 2);
-		ft_putstr_fd("\033[m", 2);
+		if (*msg == '%')
+		{
+			msg++;
+			print_arg(*msg, ap);
+		}
+		else
+			ft_putcolored_char(*msg, 1);
+		msg++;
 	}
-	else
-	{
-		ft_putstr_fd(s1, 2);
-		ft_putstr_fd("\033[m", 2);
-		ft_putendl_fd(s2, 2);
-	}
-	if (details)
-	{
-		ft_putstr_fd("details:\n\t", 2);
-		perror(s2);
-	}
-	if (exit_bool)
+	va_end(ap);
+	if (quit)
 		exit(0);
 	return (-42);
 }
